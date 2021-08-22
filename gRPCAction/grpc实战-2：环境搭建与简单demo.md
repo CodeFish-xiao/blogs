@@ -14,7 +14,7 @@ go version
 然后就可以了。
 
 ### 2.1.2 protoc 安装
-在 gRPC 开发中，我们常常需要与 Protobuf 进行打交道，而在编写了.proto 文件后，我们会需要到一个编译器，就是protoc。这个工具呢可以在GitHub上直接下载 
+在 gRPC 开发中，我们常常需要与 Protobuf 进行打交道，而在编写了.proto 文件后，我们会需要到一个编译器，就是protoc。这个工具呢可以在GitHub上直接下载
 
 [https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases)
 
@@ -93,3 +93,118 @@ server：gRPC服务端代码
 
 
 接下来可以编译编写好的代码
+
+通过下面的命令就可以直接生成对应语言的代码，具体代码可见：[这里](https://github.com/CodeFish-xiao/blogs/tree/main/gRPCAction/code/grpc-2)
+~~~
+protoc --go_out=plugins=grpc:. *.proto
+~~~
+
+### 2.2.3 编写服务端代码
+
+接下来便可以编写服务端代码（结合注释食用即可）
+
+~~~go
+import (
+	"context"
+	pb "github.com/CodeFish-xiao/blogs/gRPCAction/code/grpc-2/pb"
+	"google.golang.org/grpc"
+	"log"
+	"net"
+)
+// HelloService 定义我们的服务
+type HelloService struct {
+	
+}
+
+// SayHello 实现SayHello方法
+func (s *HelloService) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResp, error)  {
+	log.Println(req.Name)
+	return &pb.HelloResp{Message: "hello ,I'm codefish "},nil
+}
+const (
+	// Address 监听地址
+	Address string = ":8000"
+	// Network 网络通信协议
+	Network string = "tcp"
+)
+func main() {
+	// 监听本地端口
+	listener, err := net.Listen(Network, Address)
+	if err != nil {
+		log.Panic("net.Listen err: %v", err)
+	}
+	log.Println(Address + " net.Listing...")
+	// 新建gRPC服务器实例
+	grpcServer := grpc.NewServer()
+	// 在gRPC服务器注册我们的服务
+	pb.RegisterHelloServer(grpcServer,&HelloService{})
+	//用服务器 Serve() 方法以及我们的端口信息区实现阻塞等待，直到进程被杀死或者 Stop() 被调用
+	err = grpcServer.Serve(listener)
+	if err != nil {
+		log.Panic("grpcServer.Serve err: %v", err)
+	}
+}
+~~~
+
+运行客户端可见：
+
+[![hSIfv8.png](https://z3.ax1x.com/2021/08/22/hSIfv8.png)](https://imgtu.com/i/hSIfv8)
+
+这就是运行成功了
+### 2.2.4 编写客户端代码
+
+接下来编写客户端代码：结合注释食用：
+
+~~~go
+import (
+	"context"
+	pb "github.com/CodeFish-xiao/blogs/gRPCAction/code/grpc-2/pb"
+	"google.golang.org/grpc"
+	"log"
+)
+
+const (
+	// ServerAddress 连接地址
+	ServerAddress string = ":8000"
+)
+
+func main() {
+	// 连接服务器
+	conn, err := grpc.Dial(ServerAddress, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("net.Connect err: %v", err)
+	}
+	defer conn.Close()
+
+	// 建立gRPC连接
+	grpcClient := pb.NewHelloClient(conn)
+	// 创建发送结构体
+	req := pb.HelloRequest{
+		Name: "grpc",
+	}
+	// 调用我们的服务(Route方法)
+	// 同时传入了一个 context.Context ，在有需要时可以让我们改变RPC的行为，比如超时/取消一个正在运行的RPC
+	res, err := grpcClient.SayHello(context.Background(), &req)
+	if err != nil {
+		log.Fatalf("Call Route err: %v", err)
+	}
+	// 打印返回值
+	log.Println(res)
+}
+~~~
+
+运行后可见：
+
+[![hSo3xf.png](https://z3.ax1x.com/2021/08/22/hSo3xf.png)](https://imgtu.com/i/hSo3xf)
+
+并且在server的控制台可以看到打印的参数：
+
+[![hSo0Gq.png](https://z3.ax1x.com/2021/08/22/hSo0Gq.png)](https://imgtu.com/i/hSo0Gq)
+
+## 总结
+
+这样子便可以搭建一个简单的gRPC服务了，可以让客户端和服务端进行简单的业务交互了，当然这才刚刚开始。。。
+
+
+本章代码可见[codefish的github](https://github.com/CodeFish-xiao/blogs/tree/main/gRPCAction/code/grpc-2)
+
