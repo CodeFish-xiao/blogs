@@ -3,6 +3,9 @@ syntax = "proto3";
 package pb;
 //go 包
 option go_package = "../pb";
+//运行命令
+//protoc --go_out=plugins=grpc:. *.proto
+
 //一个为Hello的服务（可定义多个服务,每个服务可定义多个方法）
 service Hello {
   //一个SayHello的方法
