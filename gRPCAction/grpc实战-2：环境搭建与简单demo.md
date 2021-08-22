@@ -182,11 +182,11 @@ func main() {
 	req := pb.HelloRequest{
 		Name: "grpc",
 	}
-	// 调用我们的服务(Route方法)
+	// 调用我们的服务(SayHello方法)
 	// 同时传入了一个 context.Context ，在有需要时可以让我们改变RPC的行为，比如超时/取消一个正在运行的RPC
 	res, err := grpcClient.SayHello(context.Background(), &req)
 	if err != nil {
-		log.Fatalf("Call Route err: %v", err)
+		log.Fatalf("Call SayHello err: %v", err)
 	}
 	// 打印返回值
 	log.Println(res)
