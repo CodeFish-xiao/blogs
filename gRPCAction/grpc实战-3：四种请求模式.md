@@ -10,7 +10,7 @@ gRPC主要有4种请求和响应模式，分别是简单模式(Simple RPC)、服
 
 不同的调用方式往往代表着不同的应用场景，接下来我们就把剩下的三种来实操一遍：
 
-温馨提示：以下的所有代码，都在[这里](),所有的pb文件都在pb包中。
+温馨提示：以下的所有代码，都在 [这里](https://github.com/CodeFish-xiao/blogs/tree/main/gRPCAction/code/grpc-3) ,所有的pb文件都在pb包中。
 ## 3.2 服务端流式 RPC（Server-side streaming RPC）
 
 服务器端流式 RPC，也就是是单向流，并代指 Server 为 Stream，Client 为普通的一元 RPC 请求。
