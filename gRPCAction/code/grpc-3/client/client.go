@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	pb "github.com/CodeFish-xiao/blogs/gRPCAction/code/grpc-3/pb"
+	"github.com/CodeFish-xiao/blogs/gRPCAction/code/grpc-3/pb"
 	"google.golang.org/grpc"
 	"io"
 	"log"

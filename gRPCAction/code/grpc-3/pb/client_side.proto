@@ -9,7 +9,7 @@ option go_package = "../pb";
 //一个为ClientSide的服务（可定义多个服务,每个服务可定义多个方法）
 service ClientSide {
   //一个ClientSideHello的方法
-  rpc ClientSideHello (stream ClientSideRequest) returns ( ClientSideResp) {}
+  rpc ClientSideHello (stream ClientSideRequest) returns (ClientSideResp) {}
 }
 // 定义发送请求信息
 message ClientSideRequest {
