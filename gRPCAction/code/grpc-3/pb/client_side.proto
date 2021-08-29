@@ -1,0 +1,23 @@
+syntax = "proto3";
+//包名
+package pb;
+//go 包
+option go_package = "../pb";
+//运行命令
+//protoc --go_out=plugins=grpc:. *.proto
+
+//一个为ClientSide的服务（可定义多个服务,每个服务可定义多个方法）
+service ClientSide {
+  //一个ClientSideHello的方法
+  rpc ClientSideHello (stream ClientSideRequest) returns ( ClientSideResp) {}
+}
+// 定义发送请求信息
+message ClientSideRequest {
+  // 定义发送的参数
+  // 参数类型 参数名 标识号(不可重复)
+  string name = 1;
+}
+// 定义响应信息
+message ClientSideResp {
+  string message = 1;
+}
