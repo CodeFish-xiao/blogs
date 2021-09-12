@@ -15,7 +15,9 @@ const (
 )
 
 func main() {
-	ServerSide()
+	//ServerSide()
+	//ClientSide()
+	Bidirectional()
 }
 
 func ServerSide() {
@@ -65,8 +67,15 @@ func ClientSide() {
 	if err != nil {
 		log.Fatalf("Call SayHello err: %v", err)
 	}
+	for i := 0; i < 5; i++ {
+		err = res.Send(&pb.ClientSideRequest{Name: "客户端流式"})
+		if err != nil {
+			return
+		}
+	}
+
 	// 打印返回值
-	log.Println(res)
+	log.Println(res.CloseAndRecv())
 }
 func Bidirectional() {
 	// 连接服务器
@@ -78,14 +87,14 @@ func Bidirectional() {
 
 	// 建立gRPC连接
 	grpcClient := pb.NewBidirectionalClient(conn)
-
+	//获取流信息
 	stream, err := grpcClient.BidirectionalHello(context.Background())
 	if err != nil {
 		log.Fatalf("get BidirectionalHello stream err: %v", err)
 	}
 
 	for n := 0; n < 5; n++ {
-		err := stream.Send(&pb.BidirectionalRequest{Name: "stream client rpc " + strconv.Itoa(n)})
+		err := stream.Send(&pb.BidirectionalRequest{Name: "双向流 rpc " + strconv.Itoa(n)})
 		if err != nil {
 			log.Fatalf("stream request err: %v", err)
 		}
