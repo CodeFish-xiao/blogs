@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	stringService := new(service.HelloService)
+	stringService := service.NewService()
 	err := rpc.Register(stringService)
 	if err != nil {
 		log.Fatal("Register err: ", err)

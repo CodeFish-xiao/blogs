@@ -20,8 +20,13 @@ func (s *HelloService) Hello(req api.HelloRequest, ret *string) error {
 	*ret = "谢谢大爷"
 	return nil
 }
-func (s *HelloService) z(req api.HelloRequest, ret *string) error {
+func (s *HelloService) HelloGO(req api.HelloRequest, ret *string) error {
 	log.Println("接客了：", req.Name)
 	*ret = "异步，谢谢大爷"
 	return nil
+}
+
+// NewService 构造函数
+func NewService() Service {
+	return &HelloService{}
 }
