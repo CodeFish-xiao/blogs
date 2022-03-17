@@ -21,3 +21,9 @@ go install
 dlv.path=/usr/local/bin/dlv
 ~~~
 保存重启，解决step over(F8) 直接运行DEBUG.
+
+### 1.1.3 2022.03.17修正
+不需要第二步添加该命令，即可以修复
+~~~
+dlv.path=/usr/local/bin/dlv
+~~~
