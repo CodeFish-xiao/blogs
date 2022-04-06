@@ -1,7 +1,7 @@
 # docker安装mongo容器并挂载外部配置文件及目录
 
 今天来总结一下docker安装mongo并挂载外部配置文件及目录
-
+## 部署
 1. 拉取mongo镜像
 
 > docker pull mongo:4.0
@@ -50,3 +50,5 @@ bind_ip=0.0.0.0
 创建容器：
 
 `docker run -d -p 27017:27017 -v /data/mongo/data:/data/db -v /data/mongo/conf:/data/conf -v /data/mongo/log:/data/log --name mongo mongo:4.0`
+
+## 初始化
