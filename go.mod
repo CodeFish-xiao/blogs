@@ -1,6 +1,6 @@
 module github.com/CodeFish-xiao/blogs
 
-go 1.17
+go 1.18
 
 require (
 	google.golang.org/grpc v1.40.0
