@@ -49,7 +49,9 @@ func main() {
 		return handler(ctx, req)
 	}
 	// 新建gRPC服务器实例
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(checkInterceptor))
+	opts := []grpc.ServerOption{}
+	opts = append(opts, grpc.UnaryInterceptor(checkInterceptor))
+	grpcServer := grpc.NewServer(opts...)
 	// 在gRPC服务器注册我们的服务
 	pb.RegisterHelloServer(grpcServer, &HelloService{})
 	//用服务器 Serve() 方法以及我们的端口信息区实现阻塞等待，直到进程被杀死或者 Stop() 被调用
@@ -75,6 +77,5 @@ func Check(ctx context.Context) error {
 	if token != "test" {
 		return errors.New("token err")
 	}
-
 	return nil
 }
