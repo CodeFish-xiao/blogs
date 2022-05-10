@@ -40,6 +40,8 @@ func Check(ctx context.Context) error {
 }
 ```
 
+那么，怎么把这个方法作为拦截器使用在server端呢？看一下以下的代码
+
 ```go
 	var checkInterceptor grpc.UnaryServerInterceptor
 	checkInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
