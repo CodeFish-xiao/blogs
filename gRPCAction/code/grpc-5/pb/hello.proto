@@ -1,0 +1,31 @@
+syntax = "proto3";
+//包名
+package pb;
+//go 包
+option go_package = "../pb";
+//运行命令
+//protoc --go_out=plugins=grpc:. *.proto
+import "google/api/annotations.proto";
+// the validate rules:
+// https://github.com/envoyproxy/protoc-gen-validate
+import "validate/validate.proto";
+//一个为Hello的服务（可定义多个服务,每个服务可定义多个方法）
+service Hello {
+  //一个SayHello的方法
+  rpc SayHello (HelloRequest) returns (HelloResp) {
+    option (google.api.http) = {
+      post: "/v1/hello"
+      body: "*"
+    };
+  }
+}
+// 定义发送请求信息
+message HelloRequest {
+  // 定义发送的参数
+  // 参数类型 参数名 标识号(不可重复)
+  string name = 1[(validate.rules).string = {min_len: 5, max_len: 50}];
+}
+// 定义响应信息
+message HelloResp {
+  string message = 1;
+}
