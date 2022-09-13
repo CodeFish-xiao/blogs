@@ -74,7 +74,7 @@ func Check(ctx context.Context) error {
 	if value, ok := md["token"]; ok {
 		token = value[0]
 	}
-	if token != "test" {
+	if token != "ok" {
 		return errors.New("token err")
 	}
 	return nil
