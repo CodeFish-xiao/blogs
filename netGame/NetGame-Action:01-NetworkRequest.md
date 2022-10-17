@@ -148,9 +148,31 @@ Echo程序是网络编程中最基础的案例。建立网络连接后，客户�
 
 这里我们会第一次接触Unity的脚本编程。可以先简单跟着做就行，这里涉及到的东西在后续的章节会进行详细解说。
 
+首先让我们知道我们想要哪些东西：
 
+- 需要2个按键
+  - 创建链接
+  - 发送信息
+- 一个发送信息的输入框
+- 一个接受信息回显的输出框
+
+确定我们需要这些以后，开始使用Unity进行开发：
+
+1. 创建Unity项目后，在 Hierarchy 栏右键点击鼠标创建UI：
+
+[![xDVIdP.png](https://s1.ax1x.com/2022/10/17/xDVIdP.png)](https://imgse.com/i/xDVIdP)
+
+2. 分别创建两个Button，一个InputField，还有一个Text，并且根据用途进行重命名。
+
+   [![xDZELR.png](https://s1.ax1x.com/2022/10/17/xDZELR.png)](https://imgse.com/i/xDZELR)
+
+3. 点击运行后，最后呈现出是这样的：
+
+   [![xDZlSe.png](https://s1.ax1x.com/2022/10/17/xDZlSe.png)](https://imgse.com/i/xDZlSe)
 
 ##### 脚本编写
+
+UI面板简单拼接后，我们进行脚本编写：
 
 在Unity中需要使用 `Net.Sockets` 包进行Sockets网络开发。
 
@@ -203,9 +225,28 @@ public class Echo:MonoBehaviour {
 } 
 ```
 
+##### 挂载脚本
+
+- 我们将这个脚本绑定（直接将脚本拖动过去）在 `Main Camera` 上就会发现这里多了个我们写完的Echo脚本，并且多了两个需要挂载的组件，这就是我们在脚本定义的两个组件：
+
+![image-20221017145530912](/Users/codefish/Library/Application Support/typora-user-images/image-20221017145530912.png)
+
+- 点击小圆点并且挂载上对应组件：
+
+[![xDeyge.png](https://s1.ax1x.com/2022/10/17/xDeyge.png)](https://imgse.com/i/xDeyge)
+
+- 接下来我们需要绑定点击事件。在创建的Button里找到Button栏
+- 在OnClick中绑定之前挂载脚本的 MainCamera组件的Echo.Send方法。
+
+[![xDefEt.png](https://s1.ax1x.com/2022/10/17/xDefEt.png)](https://imgse.com/i/xDefEt)
+
+- 这下基本就完成了Unity端的编辑。
+
 #### Golang 服务端代码
 
-```
+在编写服务端代码时，基本就是代码的问题了。下面的代码每一句都会有注释，可以详细看看：
+
+```go
 package main
 
 import (
@@ -214,17 +255,21 @@ import (
 )
 
 func main() {
+  //监听8972端口的TCP请求
 	ln, err := net.Listen("tcp", ":8972")
 	if err != nil {
 		panic(err)
 	}
+  //处理监听的所有链接
 	var connections []net.Conn
+  //最后关闭链接
 	defer func() {
 		for _, conn := range connections {
 			conn.Close()
 		}
 	}()
 	for {
+    //等待链接加入
 		conn, e := ln.Accept()
 		if e != nil {
 			if ne, ok := e.(net.Error); ok && ne.Timeout() {
@@ -234,6 +279,7 @@ func main() {
 			log.Printf("accept err: %v", e)
 			return
 		}
+    //开启协程处理链接
 		go handleConn(conn)
 		connections = append(connections, conn)
 		if len(connections)%100 == 0 {
@@ -267,3 +313,11 @@ func (c Client) Echo() {
 }
 
 ```
+
+到此，双端的代码就编写完毕。你可以先运行服务端代码，然后运行Unity代码，之后就可以进行测试这个Echo程序了。
+
+## 总结
+
+至此，我们简单的介绍了一下Unity和Golang如何通过Http和Tcp进行通讯。在一个网络游戏里，会有使用Http的场景，也会有使用Tcp或者其他协议的Socket流的场景，所以这些我们都应该要掌握一下。
+
+下一章，我们会进行一个基于Unity的聊天室开发。Show Code ，No BB。
