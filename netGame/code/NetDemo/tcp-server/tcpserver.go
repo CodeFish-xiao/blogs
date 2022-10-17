@@ -1,8 +1,6 @@
 package main
 
 import (
-	"io"
-	"io/ioutil"
 	"log"
 	"net"
 )
@@ -36,6 +34,26 @@ func main() {
 	}
 }
 
+//处理链接
 func handleConn(conn net.Conn) {
-	io.Copy(ioutil.Discard, conn)
+	c := NewClient(conn)
+	go c.Echo()
+}
+
+// Client 客户端结构体
+type Client struct {
+	net.Conn //保存链接
+}
+
+func NewClient(conn net.Conn) *Client {
+	return &Client{conn}
+}
+
+// Echo Echo逻辑代码，收到消息直接发回客户端即可
+func (c Client) Echo() {
+	buf := make([]byte, 1024)
+	for {
+		c.Read(buf)
+		c.Write(buf)
+	}
 }

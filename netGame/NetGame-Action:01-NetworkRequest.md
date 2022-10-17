@@ -133,40 +133,137 @@ log.Fatal(s.ListenAndServe())
 
 #### Echo 程序
 
-Echo程序是网络编程中最基础的案例。建立网络连接后，客户端向服务端发送一行文本，服务端收到后将文本发送回客户端
+Echo程序是网络编程中最基础的案例。建立网络连接后，客户端向服务端发送一行文本，服务端收到后将文本发送回客户端，其实就是最简单版的一来一回的请求代码：
+
+我们需要自己实现以下几步：
+
+1. 建立链接
+2. 发送消息
+3. 接受并且回显消息
+4. 关闭链接
+
+#### Unity 长链接实现
+
+##### 搭建UI面板
+
+这里我们会第一次接触Unity的脚本编程。可以先简单跟着做就行，这里涉及到的东西在后续的章节会进行详细解说。
+
+
+
+##### 脚本编写
+
+在Unity中需要使用 `Net.Sockets` 包进行Sockets网络开发。
 
 ```
 public class Echo:MonoBehaviour { 
     //定义套接字
     Socket socket;
-    //UGUI
+    //UGUI 输入框
     public InputField InputFeld;
+    //回显用的text组件
     public Text text;
-
-    //点击连接按钮
+    //请求的服务端 host
+    public string host;
+    //服务端端口
+    public int port;
+    //初始化值
+    public void Start()
+    {
+        host = "127.0.0.1";
+        port = 8972;
+    }
+    
+    //点击连接按钮事件
     public void Connection()
     {
         //Socket
-        socket = new Socket(AddressFamily.InterNetwork, 
-            SocketType.Stream, ProtocolType.Tcp);
+        socket = new Socket(AddressFamily.InterNetwork,SocketType.Stream, ProtocolType.Tcp);
         //Connect
-        socket.Connect("127.0.0.1", 8972);
+        socket.Connect(host, port);
     }
-
+    
     //点击发送按钮
     public void Send()
     {
-        //Send
+        //Send 
+        // 获取组件的text值
         string sendStr = InputFeld.text;
         byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendStr);
+        //发送值到服务器
         socket.Send(sendBytes);
         //Recv
         byte[] readBuff = new byte[1024]; 
+        //接收服务器返回值
         int count = socket.Receive(readBuff); 
         string recvStr = System.Text.Encoding.Default.GetString(readBuff, 0, count); 
         text.text = recvStr; 
-        //Close
+        //Close 关闭连接
         socket.Close();
     }
 } 
+```
+
+#### Golang 服务端代码
+
+```
+package main
+
+import (
+	"log"
+	"net"
+)
+
+func main() {
+	ln, err := net.Listen("tcp", ":8972")
+	if err != nil {
+		panic(err)
+	}
+	var connections []net.Conn
+	defer func() {
+		for _, conn := range connections {
+			conn.Close()
+		}
+	}()
+	for {
+		conn, e := ln.Accept()
+		if e != nil {
+			if ne, ok := e.(net.Error); ok && ne.Timeout() {
+				log.Printf("accept temp err: %v", ne)
+				continue
+			}
+			log.Printf("accept err: %v", e)
+			return
+		}
+		go handleConn(conn)
+		connections = append(connections, conn)
+		if len(connections)%100 == 0 {
+			log.Printf("total number of connections: %v", len(connections))
+		}
+	}
+}
+
+//处理链接
+func handleConn(conn net.Conn) {
+	c := NewClient(conn)
+	go c.Echo()
+}
+
+// Client 客户端结构体
+type Client struct {
+	net.Conn //保存链接
+}
+
+func NewClient(conn net.Conn) *Client {
+	return &Client{conn}
+}
+
+// Echo Echo逻辑代码，收到消息直接发回客户端即可
+func (c Client) Echo() {
+	buf := make([]byte, 1024)
+	for {
+		c.Read(buf)
+		c.Write(buf)
+	}
+}
+
 ```
