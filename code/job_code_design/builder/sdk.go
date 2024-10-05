@@ -11,7 +11,7 @@ type ShareReq struct {
 
 // ShareServices 分享服务接口
 type ShareServices interface {
-	DoShare(req ShareReq)
+	DoShare(req ShareReq) error
 }
 
 // TencentClient 腾讯SDK
@@ -21,11 +21,11 @@ type TencentClient struct {
 	Share ShareServices
 }
 
-func NewClient(appid string) TencentClient {
-	client := TencentClient{
+func NewClient(appid string) *TencentClient {
+	client := &TencentClient{
 		appid: appid,
 	}
-	initShareServices(&client)
+	initShareServices(client)
 	return client
 }
 func initShareServices(client *TencentClient) {
