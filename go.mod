@@ -1,6 +1,6 @@
 module github.com/CodeFish-xiao/blogs
 
-go 1.18
+go 1.21
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
