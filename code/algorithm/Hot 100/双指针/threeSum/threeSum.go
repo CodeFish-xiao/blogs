@@ -1,39 +1,41 @@
 package threeSum
 
-import "sort"
+import (
+	"slices"
+)
 
 func threeSum(nums []int) [][]int {
+	slices.Sort(nums)
 	n := len(nums)
-	sort.Ints(nums)
 	ans := make([][]int, 0)
-
-	// 枚举 a
-	for first := 0; first < n; first++ {
-		// 需要和上一次枚举的数不相同
-		if first > 0 && nums[first] == nums[first-1] {
+	for i, v := range nums {
+		if i > 0 && nums[i] == nums[i-1] {
 			continue
 		}
-		// c 对应的指针初始指向数组的最右端
-		third := n - 1
-		target := -1 * nums[first]
-		// 枚举 b
-		for second := first + 1; second < n; second++ {
-			// 需要和上一次枚举的数不相同
-			if second > first+1 && nums[second] == nums[second-1] {
+		// 后续就是两数之和等于-v了
+		// 尾指针
+		k := n - 1
+		j := i + 1
+		for j < k {
+			if j > i+1 && nums[j] == nums[j-1] {
+				j++
 				continue
 			}
-			// 需要保证 b 的指针在 c 的指针的左侧
-			for second < third && nums[second]+nums[third] > target {
-				third--
+			sum := nums[j] + nums[k] + v
+			if sum < 0 {
+				j++
 			}
-			// 如果指针重合，随着 b 后续的增加
-			// 就不会有满足 a+b+c=0 并且 b<c 的 c 了，可以退出循环
-			if second == third {
-				break
+			if sum > 0 {
+				k--
 			}
-			if nums[second]+nums[third] == target {
-				ans = append(ans, []int{nums[first], nums[second], nums[third]})
+			if sum == 0 {
+				ans = append(ans, []int{nums[i], nums[j], nums[k]})
+				for j++; j < k && nums[j] == nums[j-1]; j++ {
+				} // 跳过重复数字
+				for k--; k > j && nums[k] == nums[k+1]; k-- {
+				} // 跳过重复数字
 			}
+
 		}
 	}
 	return ans
